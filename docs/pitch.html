@@ -20,7 +20,7 @@
     font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
   .deck { height: 100%; overflow: hidden; }
   .slide {
-    height: 100%; padding: 7vh 8vw; display: none; flex-direction: column;
+    height: 100%; padding: 6vh 7vw; display: none; flex-direction: column;
     justify-content: center; position: relative;
     background:
       radial-gradient(ellipse 80% 50% at 10% 0%, rgba(110,168,254,0.12), transparent 55%),
@@ -28,6 +28,7 @@
       var(--bg);
   }
   .slide.on { display: flex; }
+  .slide.shot { justify-content: flex-start; padding-top: 5vh; }
   .brand {
     font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
     font-size: clamp(2.8rem, 7vw, 5.2rem); font-weight: 700; letter-spacing: -0.03em;
@@ -40,42 +41,45 @@
   }
   h2 {
     font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
-    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 650; letter-spacing: -0.02em;
-    margin-bottom: 0.6em;
+    font-size: clamp(1.6rem, 3.6vw, 2.5rem); font-weight: 650; letter-spacing: -0.02em;
+    margin-bottom: 0.55em;
   }
   p, li {
     font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
-    font-size: clamp(1.05rem, 2vw, 1.35rem); color: var(--muted); line-height: 1.5;
-    max-width: 38em;
+    font-size: clamp(1.02rem, 1.9vw, 1.28rem); color: var(--muted); line-height: 1.5;
+    max-width: 40em;
   }
-  ul { list-style: none; display: grid; gap: 0.85rem; margin-top: 0.5rem; }
+  ul { list-style: none; display: grid; gap: 0.75rem; margin-top: 0.4rem; }
   li::before { content: "→ "; color: var(--accent); font-weight: 600; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; }
-  @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; margin-top: 1.2rem; }
+  .row.three { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 900px) {
+    .row, .row.three, .shot-grid { grid-template-columns: 1fr !important; }
+  }
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
-    padding: 1.4rem 1.5rem;
+    padding: 1.2rem 1.35rem;
   }
   .card h3 {
     font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
-    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: 0.5rem;
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 0.45rem;
   }
   .card.cold h3 { color: var(--cold); }
   .card.warm h3 { color: var(--warm); }
-  .card p { color: var(--text); font-size: 1.05rem; }
+  .card p { color: var(--text); font-size: 1rem; max-width: none; }
   .mono {
     font-family: ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 0.95rem; color: var(--accent); margin-top: 1.2rem;
+    font-size: 0.92rem; color: var(--accent); margin-top: 1.1rem;
   }
   .footer {
-    position: absolute; bottom: 3.5vh; left: 8vw; right: 8vw;
+    position: absolute; bottom: 3.2vh; left: 7vw; right: 7vw;
     display: flex; justify-content: space-between; align-items: center;
     font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
-    font-size: 0.8rem; color: var(--muted);
+    font-size: 0.78rem; color: var(--muted);
   }
   .nav {
-    position: fixed; bottom: 2.5vh; right: 3vw; display: flex; gap: 8px; z-index: 5;
+    position: fixed; bottom: 2.2vh; right: 2.5vw; display: flex; gap: 8px; z-index: 5;
   }
   .nav button {
     background: var(--panel); color: var(--text); border: 1px solid var(--line);
@@ -84,6 +88,26 @@
   .nav button:hover { border-color: var(--accent); }
   .big-num { font-size: clamp(3rem, 8vw, 5rem); font-weight: 700; color: var(--warm);
     font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; letter-spacing: -0.04em; }
+  .shot-frame {
+    margin-top: 0.6rem; border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden; background: #000; box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+    max-height: 68vh;
+  }
+  .shot-frame img {
+    display: block; width: 100%; height: auto; max-height: 68vh; object-fit: contain;
+    object-position: top left;
+  }
+  .shot-grid {
+    display: grid; grid-template-columns: 1.35fr 0.85fr; gap: 1rem; margin-top: 0.7rem;
+    align-items: stretch; flex: 1; min-height: 0;
+  }
+  .shot-grid .shot-frame { max-height: 62vh; }
+  .shot-grid img { max-height: 62vh; }
+  .caption {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: 0.85rem; color: var(--muted); margin-top: 0.55rem;
+  }
+  .caption strong { color: var(--text); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -93,7 +117,7 @@
     <div class="brand">Déjà Query</div>
     <p class="tag">An agent that gets cheaper every time it’s already seen a question shaped like this one.</p>
     <p class="mono">EverOS memory · Snowflake cost visibility · OpenAI cold path</p>
-    <div class="footer"><span>Warm Path</span><span>1 / 8</span></div>
+    <div class="footer"><span>Warm Path</span><span>1 / 10</span></div>
   </section>
 
   <section class="slide">
@@ -103,7 +127,7 @@
       <li>Native agent dashboards rarely show cost by <em>question pattern</em>.</li>
       <li>Schema tools help reload structure; they don’t remember how a class of question gets answered.</li>
     </ul>
-    <div class="footer"><span>Warm Path · Déjà Query</span><span>2 / 8</span></div>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>2 / 10</span></div>
   </section>
 
   <section class="slide">
@@ -118,19 +142,37 @@
         <p>EverOS finds a similar past question. Slot-fill N and time window. Skip the LLM.</p>
       </div>
     </div>
-    <p class="mono" style="margin-top:1.5rem">Same intelligence. Fraction of the cost. Cheaper the longer it runs.</p>
-    <div class="footer"><span>Warm Path · Déjà Query</span><span>3 / 8</span></div>
+    <p class="mono" style="margin-top:1.4rem">Same intelligence. Fraction of the cost. Cheaper the longer it runs.</p>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>3 / 10</span></div>
   </section>
 
-  <section class="slide">
-    <h2>Live proof (not a claim)</h2>
-    <ul>
-      <li><strong style="color:var(--text)">top 5 Electronics… this quarter</strong> → cold · LLM ran</li>
-      <li><strong style="color:var(--text)">top 3 Electronics… last month</strong> → warm · 0 tokens</li>
-      <li>New shape (channel / trend / total) → cold once, then warm forever after</li>
-      <li>Badges, token meter, and savings update in the UI — judges can see it</li>
-    </ul>
-    <div class="footer"><span>Warm Path · Déjà Query</span><span>4 / 8</span></div>
+  <section class="slide shot">
+    <h2>Live product</h2>
+    <p class="tag" style="font-size:1.05rem; margin-bottom:0.2rem;">Cold once → warm forever after — badges, tokens, and savings in one screen.</p>
+    <div class="shot-frame">
+      <img src="demo-cold-warm.png" alt="Déjà Query dashboard showing warm and cold paths" />
+    </div>
+    <p class="caption"><strong>Warm</strong> · 0 tokens · LLM skipped &nbsp;·&nbsp; <strong>Cold</strong> · live OpenAI · skill learned</p>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>4 / 10</span></div>
+  </section>
+
+  <section class="slide shot">
+    <h2>What judges see in the UI</h2>
+    <div class="shot-grid">
+      <div>
+        <div class="shot-frame">
+          <img src="demo-results.png" alt="Warm then cold result cards with SQL and tables" />
+        </div>
+        <p class="caption">Result cards: path badge, tokens, SQL, answer table</p>
+      </div>
+      <div>
+        <div class="shot-frame">
+          <img src="demo-cost-panel.png" alt="Cost chart, skill library, and SQL cost breakdown" />
+        </div>
+        <p class="caption">Cost chart · skill library · live SQL breakdown</p>
+      </div>
+    </div>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>5 / 10</span></div>
   </section>
 
   <section class="slide">
@@ -140,34 +182,63 @@
       <li><strong style="color:var(--text)">Snowflake</strong> — business SQL <em>and</em> queryable agent cost log (`GROUP BY` shape × path)</li>
       <li><strong style="color:var(--text)">OpenAI</strong> — only on the cold path; warm is deterministic slot-fill</li>
     </ul>
-    <div class="footer"><span>Warm Path · Déjà Query</span><span>5 / 8</span></div>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>6 / 10</span></div>
   </section>
 
   <section class="slide">
     <h2>The number that matters</h2>
     <div class="big-num">0</div>
     <p class="tag" style="margin-top:0.4em">tokens on the warm path — no hidden second LLM call.</p>
-    <p style="margin-top:1.2rem">Conservative matching: borderline similarity stays cold. Filters (category, channel, region) and ranking direction must agree.</p>
-    <div class="footer"><span>Warm Path · Déjà Query</span><span>6 / 8</span></div>
+    <p style="margin-top:1.1rem">Conservative matching: borderline similarity stays cold. Filters and ranking direction must agree.</p>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>7 / 10</span></div>
   </section>
 
   <section class="slide">
     <h2>What’s built today</h2>
     <ul>
-      <li>FastAPI + live dashboard (cold/warm badges, skills, cost breakdown)</li>
+      <li>FastAPI dashboard with cold/warm badges, skills, and cost breakdown</li>
       <li>EverOS HTTP memory + local embedding fallback</li>
       <li>OpenAI NL→SQL with honest mock fallback</li>
       <li>SQLite stand-in for Snowflake (sales + <code style="color:var(--accent)">agent_cost_log</code>)</li>
-      <li>Broader demo shapes: rankings, filters, channels, trends, totals</li>
+      <li>Rankings, filters, channels, trends, totals</li>
     </ul>
-    <div class="footer"><span>Warm Path · Déjà Query</span><span>7 / 8</span></div>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>8 / 10</span></div>
+  </section>
+
+  <section class="slide">
+    <h2>Future scope — broader applications</h2>
+    <div class="row three">
+      <div class="card">
+        <h3 style="color:var(--accent)">Org-wide skills</h3>
+        <p>One analyst’s cold solve becomes warm for the whole company — shared EverOS skill library across teams.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--accent)">Any agent, not just SQL</h3>
+        <p>Support tickets, ops runbooks, code-fix patterns, RAG workflows — reuse solved <em>reasoning</em>, not just queries.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--accent)">Warehouse-native</h3>
+        <p>Real Snowflake / Cortex for data + cost log; multi-schema catalogs; dialect-aware templates.</p>
+      </div>
+    </div>
+    <div class="row" style="margin-top:1rem;">
+      <div class="card">
+        <h3 style="color:var(--accent)">Vertical agents</h3>
+        <p>Finance close, retail merchandising, healthcare ops, SaaS metrics — each domain learns its own question shapes.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--accent)">Governance layer</h3>
+        <p>Policy checks on warm reuse, audit trails of which skill answered whom, and cost budgets per shape.</p>
+      </div>
+    </div>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>9 / 10</span></div>
   </section>
 
   <section class="slide">
     <div class="brand" style="font-size:clamp(2.2rem,5vw,3.5rem)">Same questions.<br/>Lower bill.</div>
     <p class="tag">Déjà Query — Warm Path</p>
-    <p class="mono">Run locally → ./run_local.sh · UI → http://127.0.0.1:8000</p>
-    <div class="footer"><span>Questions welcome</span><span>8 / 8</span></div>
+    <p class="mono">Repo → github.com/shahtirth07/dejaquery &nbsp;·&nbsp; Run → ./run_local.sh</p>
+    <div class="footer"><span>Questions welcome</span><span>10 / 10</span></div>
   </section>
 
 </div>
