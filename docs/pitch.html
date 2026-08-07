@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Déjà Query — Pitch</title>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --panel: #12151c;
+    --text: #eef0f5;
+    --muted: #8b93a7;
+    --cold: #ef6a5a;
+    --warm: #4fd18b;
+    --accent: #6ea8fe;
+    --line: #23293a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .deck { height: 100%; overflow: hidden; }
+  .slide {
+    height: 100%; padding: 7vh 8vw; display: none; flex-direction: column;
+    justify-content: center; position: relative;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 0%, rgba(110,168,254,0.12), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(79,209,139,0.08), transparent 50%),
+      var(--bg);
+  }
+  .slide.on { display: flex; }
+  .brand {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.2rem); font-weight: 700; letter-spacing: -0.03em;
+    line-height: 1.05; margin-bottom: 0.35em;
+  }
+  .tag {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: clamp(1.1rem, 2.4vw, 1.55rem); color: var(--muted); max-width: 36em;
+    font-weight: 400; line-height: 1.45;
+  }
+  h2 {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 650; letter-spacing: -0.02em;
+    margin-bottom: 0.6em;
+  }
+  p, li {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: clamp(1.05rem, 2vw, 1.35rem); color: var(--muted); line-height: 1.5;
+    max-width: 38em;
+  }
+  ul { list-style: none; display: grid; gap: 0.85rem; margin-top: 0.5rem; }
+  li::before { content: "→ "; color: var(--accent); font-weight: 600; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; }
+  @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 1.4rem 1.5rem;
+  }
+  .card h3 {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .card.cold h3 { color: var(--cold); }
+  .card.warm h3 { color: var(--warm); }
+  .card p { color: var(--text); font-size: 1.05rem; }
+  .mono {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.95rem; color: var(--accent); margin-top: 1.2rem;
+  }
+  .footer {
+    position: absolute; bottom: 3.5vh; left: 8vw; right: 8vw;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .nav {
+    position: fixed; bottom: 2.5vh; right: 3vw; display: flex; gap: 8px; z-index: 5;
+  }
+  .nav button {
+    background: var(--panel); color: var(--text); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.9rem;
+  }
+  .nav button:hover { border-color: var(--accent); }
+  .big-num { font-size: clamp(3rem, 8vw, 5rem); font-weight: 700; color: var(--warm);
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; letter-spacing: -0.04em; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <section class="slide on">
+    <div class="brand">Déjà Query</div>
+    <p class="tag">An agent that gets cheaper every time it’s already seen a question shaped like this one.</p>
+    <p class="mono">EverOS memory · Snowflake cost visibility · OpenAI cold path</p>
+    <div class="footer"><span>Warm Path</span><span>1 / 8</span></div>
+  </section>
+
+  <section class="slide">
+    <h2>The problem</h2>
+    <ul>
+      <li>Agents pay full LLM price on every ask — even for questions they’ve effectively solved before.</li>
+      <li>Native agent dashboards rarely show cost by <em>question pattern</em>.</li>
+      <li>Schema tools help reload structure; they don’t remember how a class of question gets answered.</li>
+    </ul>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>2 / 8</span></div>
+  </section>
+
+  <section class="slide">
+    <h2>The idea</h2>
+    <div class="row">
+      <div class="card cold">
+        <h3>Cold · first time</h3>
+        <p>OpenAI reasons over schema + question → full SQL. Store the solve as a skill.</p>
+      </div>
+      <div class="card warm">
+        <h3>Warm · familiar shape</h3>
+        <p>EverOS finds a similar past question. Slot-fill N and time window. Skip the LLM.</p>
+      </div>
+    </div>
+    <p class="mono" style="margin-top:1.5rem">Same intelligence. Fraction of the cost. Cheaper the longer it runs.</p>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>3 / 8</span></div>
+  </section>
+
+  <section class="slide">
+    <h2>Live proof (not a claim)</h2>
+    <ul>
+      <li><strong style="color:var(--text)">top 5 Electronics… this quarter</strong> → cold · LLM ran</li>
+      <li><strong style="color:var(--text)">top 3 Electronics… last month</strong> → warm · 0 tokens</li>
+      <li>New shape (channel / trend / total) → cold once, then warm forever after</li>
+      <li>Badges, token meter, and savings update in the UI — judges can see it</li>
+    </ul>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>4 / 8</span></div>
+  </section>
+
+  <section class="slide">
+    <h2>Where each piece earns its keep</h2>
+    <ul>
+      <li><strong style="color:var(--text)">EverOS</strong> — memory over solved reasoning (Cases → reusable Skills)</li>
+      <li><strong style="color:var(--text)">Snowflake</strong> — business SQL <em>and</em> queryable agent cost log (`GROUP BY` shape × path)</li>
+      <li><strong style="color:var(--text)">OpenAI</strong> — only on the cold path; warm is deterministic slot-fill</li>
+    </ul>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>5 / 8</span></div>
+  </section>
+
+  <section class="slide">
+    <h2>The number that matters</h2>
+    <div class="big-num">0</div>
+    <p class="tag" style="margin-top:0.4em">tokens on the warm path — no hidden second LLM call.</p>
+    <p style="margin-top:1.2rem">Conservative matching: borderline similarity stays cold. Filters (category, channel, region) and ranking direction must agree.</p>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>6 / 8</span></div>
+  </section>
+
+  <section class="slide">
+    <h2>What’s built today</h2>
+    <ul>
+      <li>FastAPI + live dashboard (cold/warm badges, skills, cost breakdown)</li>
+      <li>EverOS HTTP memory + local embedding fallback</li>
+      <li>OpenAI NL→SQL with honest mock fallback</li>
+      <li>SQLite stand-in for Snowflake (sales + <code style="color:var(--accent)">agent_cost_log</code>)</li>
+      <li>Broader demo shapes: rankings, filters, channels, trends, totals</li>
+    </ul>
+    <div class="footer"><span>Warm Path · Déjà Query</span><span>7 / 8</span></div>
+  </section>
+
+  <section class="slide">
+    <div class="brand" style="font-size:clamp(2.2rem,5vw,3.5rem)">Same questions.<br/>Lower bill.</div>
+    <p class="tag">Déjà Query — Warm Path</p>
+    <p class="mono">Run locally → ./run_local.sh · UI → http://127.0.0.1:8000</p>
+    <div class="footer"><span>Questions welcome</span><span>8 / 8</span></div>
+  </section>
+
+</div>
+<div class="nav">
+  <button type="button" id="prev">←</button>
+  <button type="button" id="next">→</button>
+</div>
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  let i = 0;
+  function show(n) {
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle("on", k === i));
+  }
+  document.getElementById("prev").onclick = () => show(i - 1);
+  document.getElementById("next").onclick = () => show(i + 1);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); show(i + 1); }
+    if (e.key === "ArrowLeft") show(i - 1);
+  });
+</script>
+</body>
+</html>

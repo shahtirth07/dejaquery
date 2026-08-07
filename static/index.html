@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Déjà Query</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --bg: #0b0d12;
+    --panel: #12151c;
+    --panel-2: #171b24;
+    --border: #23293a;
+    --text: #e7e9ee;
+    --muted: #8b93a7;
+    --cold: #ef6a5a;
+    --warm: #4fd18b;
+    --unmatched: #e8b84b;
+    --accent: #6ea8fe;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Inter, sans-serif;
+  }
+  header {
+    padding: 22px 28px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: 0.2px; }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+  .runtime {
+    margin-top: 8px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .chip {
+    font-size: 11px; color: var(--muted);
+    border: 1px solid var(--border); background: var(--panel-2);
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .chip strong { color: var(--text); font-weight: 600; }
+  .stats {
+    display: flex; gap: 22px; align-items: center;
+  }
+  .stat { text-align: right; }
+  .stat .value { font-size: 20px; font-weight: 600; }
+  .stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .savings { color: var(--warm); }
+
+  main { display: grid; grid-template-columns: 1fr 320px; gap: 0; height: calc(100vh - 110px); }
+
+  .left { padding: 18px 24px; overflow-y: auto; }
+  .right { border-left: 1px solid var(--border); padding: 18px; overflow-y: auto; background: var(--panel); }
+
+  .composer { display: flex; gap: 8px; margin-bottom: 16px; }
+  .composer input {
+    flex: 1; background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 14px;
+  }
+  .composer button, .examples button, .reset button {
+    background: var(--accent); color: #0b0d12; border: none; border-radius: 8px;
+    padding: 10px 16px; font-weight: 600; cursor: pointer; font-size: 14px;
+  }
+  .composer button:hover, .examples button:hover { opacity: 0.9; }
+
+  .examples { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .examples button {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    font-weight: 400; font-size: 12.5px; padding: 7px 11px;
+  }
+
+  .entry {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 12px;
+  }
+  .entry-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .question { font-weight: 500; font-size: 14.5px; }
+  .badge {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.4px; padding: 3px 9px;
+    border-radius: 999px; text-transform: uppercase; white-space: nowrap;
+  }
+  .badge.cold { background: rgba(239,106,90,0.15); color: var(--cold); }
+  .badge.warm { background: rgba(79,209,139,0.15); color: var(--warm); }
+  .badge.unmatched { background: rgba(232,184,75,0.15); color: var(--unmatched); }
+
+  .meta { color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.45; }
+  .meta .note { display: block; margin-top: 2px; font-size: 11.5px; opacity: 0.9; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--accent); font-size: 12.5px; }
+  pre {
+    background: #0a0c11; border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px; font-size: 12px; overflow-x: auto; margin: 8px 0 0;
+  }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; }
+
+  .chart-wrap { margin-bottom: 20px; }
+  .chart-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  canvas { width: 100%; height: 160px; display: block; }
+
+  .skills-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .skill-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); gap: 10px; }
+  .skill-row span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .empty { color: var(--muted); font-size: 13px; }
+
+  .legend { display: flex; gap: 14px; font-size: 11px; color: var(--muted); margin-top: 6px; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  @media (max-width: 800px) {
+    main { grid-template-columns: 1fr; height: auto; }
+    .right { border-left: none; border-top: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Déjà Query</h1>
+    <p>Ask business questions in plain English — rankings, filters, trends, totals.
+       Repeat a familiar shape and it skips the LLM.</p>
+    <div class="runtime">
+      <span class="chip" title="" id="chip-memory">Memory: …</span>
+      <span class="chip" title="" id="chip-llm">Cold-path LLM: …</span>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="value" id="stat-cost">$0.00000</div><div class="label">Session cost</div></div>
+    <div class="stat"><div class="value savings" id="stat-savings">—</div><div class="label">vs. all-cold</div></div>
+    <div class="stat"><div class="value" id="stat-skills">0</div><div class="label">Skills learned</div></div>
+    <button class="reset" onclick="resetDemo()" style="background:#23293a;color:#e7e9ee;">Reset</button>
+  </div>
+</header>
+
+<main>
+  <div class="left">
+    <div class="composer">
+      <input id="question" placeholder="e.g. top 5 regions by revenue this quarter" onkeydown="if(event.key==='Enter') ask()" />
+      <button onclick="ask()">Ask</button>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div id="entries"></div>
+  </div>
+
+  <div class="right">
+    <div class="chart-wrap">
+      <div class="chart-title">Cost per question</div>
+      <canvas id="chart" width="600" height="160"></canvas>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--cold)"></i>cold (LLM generated SQL)</span>
+        <span><i class="dot" style="background:var(--warm)"></i>warm (LLM skipped)</span>
+      </div>
+    </div>
+    <div class="skills-title">Skill library (semantic)</div>
+    <div id="skills"><div class="empty">No skills learned yet.</div></div>
+
+    <div class="skills-title" style="margin-top:22px;">
+      Cost breakdown &mdash; live query, not client math
+    </div>
+    <div id="breakdown"><div class="empty">Ask a question to populate this.</div></div>
+  </div>
+</main>
+
+<script>
+const EXAMPLES = [
+  // Classic warm-path pair (same shape, different N / time)
+  "top 5 regions by revenue this quarter",
+  "top 3 regions by revenue last month",
+  // Filters / category
+  "top 5 Electronics products by revenue this quarter",
+  "bottom 3 Outdoor products by units last month",
+  // Channel + region
+  "revenue by channel this quarter",
+  "total Online revenue in the West this month",
+  // Trends
+  "monthly revenue trend this quarter",
+  // Totals
+  "total revenue this quarter",
+];
+
+document.getElementById('examples').innerHTML = EXAMPLES.map(
+  (q, i) => `<button type="button" data-example="${i}">${q}</button>`
+).join('');
+
+document.getElementById('examples').addEventListener('click', (event) => {
+  const btn = event.target.closest('button[data-example]');
+  if (!btn) return;
+  event.preventDefault();
+  const q = EXAMPLES[Number(btn.dataset.example)];
+  if (!q) return;
+  const input = document.getElementById('question');
+  input.value = q;
+  input.focus();
+  try { input.setSelectionRange(q.length, q.length); } catch (_) {}
+});
+
+let log = [];
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function pathBadgeLabel(path) {
+  if (path === 'warm') return 'warm · LLM skipped';
+  if (path === 'cold') return 'cold · LLM ran';
+  if (path === 'unmatched') return 'unmatched · LLM ran';
+  return path;
+}
+
+function tokenLine(data) {
+  const total = (data.input_tokens || 0) + (data.output_tokens || 0);
+  if (!data.llm_called) {
+    // Warm path: only claim zero when the model genuinely was not invoked.
+    return `0 tokens (LLM not called) · $${Number(data.estimated_usd).toFixed(5)}`;
+  }
+  if (data.tokens_are_real) {
+    return `${data.input_tokens} in / ${data.output_tokens} out tokens (live API) · $${Number(data.estimated_usd).toFixed(5)}`;
+  }
+  return `${data.input_tokens} in / ${data.output_tokens} out tokens (mock estimate, not billed) · $${Number(data.estimated_usd).toFixed(5)}`;
+}
+
+function metaNote(data) {
+  const bits = [];
+  bits.push(`Memory: ${data.memory_store_label || data.memory_store || '—'}`);
+  bits.push(`LLM: ${data.llm_label || data.llm_source || '—'}`);
+  if (data.match_similarity != null) bits.push(`sim ${data.match_similarity}`);
+  if (data.llm_detail) bits.push(data.llm_detail);
+  return bits.join(' · ');
+}
+
+function setRuntimeChips(state) {
+  const mem = document.getElementById('chip-memory');
+  const llm = document.getElementById('chip-llm');
+  mem.innerHTML = `Memory: <strong>${escapeHtml(state.memory_store_label || '—')}</strong>`;
+  mem.title = state.memory_store_detail || '';
+  llm.innerHTML = `Cold-path LLM: <strong>${escapeHtml(state.llm_config_label || '—')}</strong>`;
+  llm.title = state.llm_config_detail || '';
+}
+
+async function ask() {
+  const input = document.getElementById('question');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  await askText(q);
+}
+
+async function askText(q) {
+  const res = await fetch('/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q})
+  });
+  const data = await res.json();
+  log.push(data);
+  setRuntimeChips(data);
+  render(data);
+  await renderBreakdown();
+}
+
+async function renderBreakdown() {
+  const res = await fetch('/cost-breakdown');
+  const data = await res.json();
+  const el = document.getElementById('breakdown');
+  if (!data.rows.length) {
+    el.innerHTML = '<div class="empty">No rows yet.</div>';
+    return;
+  }
+  const table = `<table><thead><tr>${data.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead>
+    <tbody>${data.rows.map(r=>`<tr>${r.map(v=>`<td>${escapeHtml(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  el.innerHTML = `
+    ${table}
+    <details style="margin-top:8px;">
+      <summary>SQL powering this panel</summary>
+      <pre>${escapeHtml(data.sql)}</pre>
+    </details>
+  `;
+}
+
+function render(data) {
+  document.getElementById('stat-cost').textContent = '$' + data.running_total_usd.toFixed(5);
+  document.getElementById('stat-savings').textContent =
+    data.savings_pct === null ? '—' : data.savings_pct + '%';
+  document.getElementById('stat-skills').textContent = data.skills_learned;
+
+  const entries = document.getElementById('entries');
+  const div = document.createElement('div');
+  div.className = 'entry';
+  const rowsHtml = data.rows.length
+    ? `<table><thead><tr>${data.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead>
+       <tbody>${data.rows.map(r=>`<tr>${r.map(v=>`<td>${escapeHtml(typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:2}):v)}</td>`).join('')}</tr>`).join('')}</tbody></table>`
+    : (data.error ? `<div class="meta" style="color:#ef6a5a">${escapeHtml(data.error)}</div>` : '');
+
+  div.innerHTML = `
+    <div class="entry-top">
+      <div class="question">${escapeHtml(data.question)}</div>
+      <span class="badge ${escapeHtml(data.path)}">${escapeHtml(pathBadgeLabel(data.path))}</span>
+    </div>
+    <div class="meta">
+      ${escapeHtml(tokenLine(data))}
+      <span class="note">${escapeHtml(metaNote(data))}</span>
+    </div>
+    <details>
+      <summary>SQL</summary>
+      <pre>${escapeHtml(data.sql)}</pre>
+    </details>
+    ${rowsHtml}
+  `;
+  entries.prepend(div);
+  drawChart();
+  refreshSkills();
+}
+
+async function refreshSkills() {
+  const res = await fetch('/state');
+  const data = await res.json();
+  setRuntimeChips(data);
+  const el = document.getElementById('skills');
+  if (!data.skills.length) {
+    el.innerHTML = '<div class="empty">No skills learned yet.</div>';
+    return;
+  }
+  el.innerHTML = data.skills.map(s =>
+    `<div class="skill-row"><span title="${escapeHtml(s.question)}">${escapeHtml(s.question)}</span><span>${s.times_reused}× reused</span></div>`
+  ).join('');
+}
+
+function drawChart() {
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  if (log.length === 0) return;
+
+  const max = Math.max(...log.map(e => e.estimated_usd), 0.00001);
+  const barW = w / log.length;
+  log.forEach((e, i) => {
+    const barH = (e.estimated_usd / max) * (h - 20);
+    ctx.fillStyle = e.path === 'cold' ? '#ef6a5a' : e.path === 'warm' ? '#4fd18b' : '#e8b84b';
+    ctx.fillRect(i * barW + 2, h - barH - 10, Math.max(barW - 4, 2), barH);
+  });
+}
+
+async function resetDemo() {
+  await fetch('/reset', {method: 'POST'});
+  log = [];
+  document.getElementById('entries').innerHTML = '';
+  document.getElementById('stat-cost').textContent = '$0.00000';
+  document.getElementById('stat-savings').textContent = '—';
+  document.getElementById('stat-skills').textContent = '0';
+  document.getElementById('skills').innerHTML = '<div class="empty">No skills learned yet.</div>';
+  document.getElementById('breakdown').innerHTML = '<div class="empty">Ask a question to populate this.</div>';
+  drawChart();
+  await refreshSkills();
+}
+
+refreshSkills();
+</script>
+</body>
+</html>
